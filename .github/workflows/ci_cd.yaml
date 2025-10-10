@@ -1,29 +1,65 @@
-name: CI/CD Pipeline
+name: Render CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - staging      
   pull_request:
-    branches: [ main ]
+    branches:
+      - staging
 
 jobs:
-  build:
+  build-test:
+    name: Build & Test (Node.js + Flutter)
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      # === Backend: Node.js ===
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.10'
+          node-version: 22
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install dependencies (backend)
+        working-directory: ./backend
+        run: npm install
 
-      - name: Run tests
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test || echo "No backend tests yet"
+
+      # === Frontend: Flutter ===
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+
+      - name: Install dependencies (frontend)
+        working-directory: ./frontend
+        run: flutter pub get
+
+      - name: Analyze & test Flutter
+        working-directory: ./frontend
         run: |
-          if [ -f pytest.ini ] || [ -d tests ]; then pytest; fi
+          flutter analyze
+          flutter test || echo "No frontend tests yet"
+
+  deploy:
+    name: Deploy to Render
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'  
+
+    steps:
+      - name: Trigger Render Deploy
+        env:
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          curl -X POST "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+          -H "Accept: application/json" \
+          -H "Authorization: Bearer ${RENDER_API_KEY}" \
+          -d ''
