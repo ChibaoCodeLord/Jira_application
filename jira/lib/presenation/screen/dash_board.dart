@@ -24,26 +24,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: const Icon(Icons.notifications_none),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.account_circle), onPressed: () {}),
         ],
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: const [
-          _ProjectsTab(),
-          _TasksTab(),
-          _ProfileTab(),
-        ],
+        children: const [_ProjectsTab(), _TasksTab(), _ProfileTab()],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.work_outline), label: 'Projects'),
-          NavigationDestination(icon: Icon(Icons.task_outlined), label: 'Tasks'),
-          NavigationDestination(icon: Icon(Icons.person_outline), label: 'Profile'),
+          NavigationDestination(
+            icon: Icon(Icons.work_outline),
+            label: 'Projects',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.task_outlined),
+            label: 'Tasks',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            label: 'Profile',
+          ),
         ],
         onDestinationSelected: (index) {
           setState(() {
@@ -62,9 +64,15 @@ class _ProjectsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     // sau này sẽ dùng BlocBuilder<ProjectCubit> ở đây
     final mockProjects = [
-      {'name': 'Jira App MVP', 'description': 'Build CI/CD + Firebase + Flutter'},
+      {
+        'name': 'Jira App MVP',
+        'description': 'Build CI/CD + Firebase + Flutter',
+      },
       {'name': 'AI Agent Tool', 'description': 'Integrate LLM to manage tasks'},
-      {'name': 'Bug Tracker', 'description': 'Simple issue tracker for internal devs'},
+      {
+        'name': 'Bug Tracker',
+        'description': 'Simple issue tracker for internal devs',
+      },
     ];
 
     return Padding(
@@ -88,9 +96,7 @@ class _TasksTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Task list will appear here"),
-    );
+    return const Center(child: Text("Task list will appear here"));
   }
 }
 
@@ -99,8 +105,6 @@ class _ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text("Profile info will appear here"),
-    );
+    return const Center(child: Text("Profile info will appear here"));
   }
 }

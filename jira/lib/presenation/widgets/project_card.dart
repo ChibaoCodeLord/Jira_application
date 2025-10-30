@@ -4,11 +4,7 @@ class ProjectCard extends StatelessWidget {
   final String name;
   final String description;
 
-  const ProjectCard({
-    super.key,
-    required this.name,
-    required this.description,
-  });
+  const ProjectCard({super.key, required this.name, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +14,7 @@ class ProjectCard extends StatelessWidget {
       elevation: 2,
       child: ListTile(
         leading: const Icon(Icons.work_outline, color: Colors.deepPurple),
-        title: Text(
-          name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(description),
         trailing: IconButton(
           icon: const Icon(Icons.arrow_forward_ios, size: 18),
