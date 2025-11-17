@@ -45,18 +45,12 @@ A project management and team collaboration tool that combines **Jira-like task 
 ---
 
 ## Tech Stack
-- **Frontend:** React, Redux, Tailwind CSS
-- **Backend:** Node.js, Express
-- **Database:** MongoDB
-- **Realtime:** Socket.IO for chat
-- **Authentication:** JWT
-- **Deployment:** Docker, Heroku
+- **Frontend:** Flutter (Dart) 🎨  
+- **Backend:** Dart + Node.js ⚡  
+- **Database:** FireBase 🗄️  
+- **Realtime:** Socket.IO for chat 💬  
+- **Authentication:** JWT 🔐  
+- **Deployment:** Docker 🐳, Heroku ☁️
 
----
 
-## Installation
-```bash
-git clone https://github.com/yourname/jira-chat-app.git
-cd jira-chat-app
-npm install
 
