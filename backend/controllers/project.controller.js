@@ -44,6 +44,7 @@ export const createProject = async (req, res) => {
     console.log(members);
 
     const ownerId = req.user?.uid;
+    projectType = 'Scrum';
     if (!ownerId) {
       return res
         .status(401)
