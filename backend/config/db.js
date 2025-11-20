@@ -1,13 +1,18 @@
-const { initializeApp, applicationDefault, cert } = from ('firebase-admin/app');
-const { getFirestore } = from('firebase-admin/firestore');
-const serviceAccount = from('../google-services.json');
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import fs from 'fs';
+import 'dotenv/config'; 
 
-// Replace the following with your service account credentials
+const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+
+if (!serviceAccountPath) {
+  throw new Error('Environment variable GOOGLE_SERVICE_ACCOUNT_JSON not set!');
+}
+
+const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
 
 initializeApp({
-    credential: cert(serviceAccount)
+  credential: cert(serviceAccount),
 });
 
-const db = getFirestore();
-
-module.exports = db;
+export const db = getFirestore();
