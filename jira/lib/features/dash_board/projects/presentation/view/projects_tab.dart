@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jira/core/injection.dart';
+import 'package:jira/features/dash_board/Issues/presentation/cubit/issue_cubit.dart';
 import 'package:jira/features/dash_board/projects/presentation/cubit/project_cubit.dart';
 import 'package:jira/features/dash_board/projects/presentation/cubit/project_state.dart';
+import 'package:jira/features/dash_board/Issues/presentation/detail_project_page.dart';
 import '../../../../login_signup/presenation/widgets/project_row.dart';
 
 class ProjectsTab extends StatelessWidget {
@@ -65,17 +68,32 @@ class ProjectsTab extends StatelessWidget {
                     separatorBuilder: (_, __) => const SizedBox(height: 8),
                     itemBuilder: (context, index) {
                       final project = projects[index];
-                      return ProjectRow(
-                        name: project.name,
-                        projectType: project.description ?? "",
-                        status: project.status,
-                        onEdit: () {
-                        },
-                        onDelete: () async {
-                          await context
-                              .read<ProjectCubit>()
-                              .removeProject(project.id!);
-                        },
+                      return GestureDetector(
+                        onTap: () {
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BlocProvider(
+                                create: (_) => getIt<IssueCubit>(),
+                                child: ProjectDetailPage(project: project),
+                              ),
+                            ),
+                          );
+
+                          },
+
+                        child: ProjectRow(
+                          name: project.name,
+                          projectType: project.description ,
+                          status: project.status,
+                          onEdit: () {
+                          },
+                          onDelete: () async {
+                            await context
+                                .read<ProjectCubit>()
+                                .removeProject(project.id!);
+                          },
+                        ),
                       );
                     },
                   ),

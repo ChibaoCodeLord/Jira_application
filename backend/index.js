@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import projectRoutes from "./routes/project.routes.js";
 import usersRoutes from "./routes/user.routes.js";
+import issuesRoutes from "./routes/issue.routes.js";
 
 dotenv.config()
 
@@ -17,6 +18,9 @@ app.use('/api/projects', projectRoutes);
 
 //User 
 app.use('/api/users',  usersRoutes );
+
+//Issues 
+app.use('/api/issues',  issuesRoutes );
 
 app.get("/", (req, res) => {
   res.json({ message: "Jira Backend API running 🚀" });

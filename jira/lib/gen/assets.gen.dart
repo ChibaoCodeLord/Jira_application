@@ -29,6 +29,9 @@ class $AssetsImagesGen {
   AssetGenImage get groupworkingImg =>
       const AssetGenImage('assets/images/groupworking_img.jpg');
 
+  /// File path: assets/images/image.png
+  AssetGenImage get image => const AssetGenImage('assets/images/image.png');
+
   /// File path: assets/images/onboard1.png
   AssetGenImage get onboard1 =>
       const AssetGenImage('assets/images/onboard1.png');
@@ -48,6 +51,7 @@ class $AssetsImagesGen {
         bell,
         eyehide,
         groupworkingImg,
+        image,
         onboard1,
         onboard2,
         onboard3
