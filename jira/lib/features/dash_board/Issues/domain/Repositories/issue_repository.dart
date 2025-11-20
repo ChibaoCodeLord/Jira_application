@@ -5,6 +5,6 @@ abstract class IssueRepository {
   Future<IssueEntity> getIssueById(String issueId);
   Future<List<IssueEntity>> getIssuesByAssignee(String assigneeId);
   Future<IssueEntity> createIssue(IssueEntity issue);
-  // Future<void> updateIssue(Issue issue);
-  // Future<void> deleteIssue(String issueId);
+  Future<IssueEntity> updateIssue(IssueEntity issue);
+  Future<bool> deleteIssue (String idIssue);
 }

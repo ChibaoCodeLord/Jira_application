@@ -4,6 +4,7 @@ import 'package:jira/features/dash_board/Issues/domain/Entity/issue_entity.dart'
 import 'package:jira/features/dash_board/Issues/presentation/cubit/issue_cubit.dart';
 import 'package:jira/features/dash_board/Issues/presentation/cubit/issue_state.dart';
 import 'package:jira/features/dash_board/Issues/presentation/view/add_issue_bottomsheet.dart';
+import 'package:jira/features/dash_board/Issues/presentation/view/detail_issue_page.dart';
 import 'package:jira/features/dash_board/projects/domain/entities/project_entity.dart';
 
 class ProjectDetailPage extends StatefulWidget {
@@ -28,7 +29,20 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
   }
 
   Widget taskItem(IssueEntity issue, Color color) {
-    return Container(
+  return GestureDetector(
+    onTap: () {
+      print(issue.id);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: context.read<IssueCubit>(),
+            child: DetailIssuePage(issue: issue),
+          ),
+        ),
+      );
+    },
+    child: Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -65,8 +79,10 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
           const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   //bottomsheet add issue
   void _showBottomSheetAddIssue(String projectId) async {
@@ -80,6 +96,7 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
         context.read<IssueCubit>().addIssue(newIssue);
       }
   }
+
 
   Widget buildTasks(List<IssueEntity> tasks, Color color) {
     if (tasks.isEmpty) {
@@ -148,15 +165,12 @@ class _ProjectDetailPageState extends State<ProjectDetailPage>
               ),
             );
           }
-
-          print(state.todo.length);
-
           return TabBarView(
             controller: _tabController,
             children: [
-              buildTasks(state.todo, Colors.orange),
-              buildTasks(state.inProgress, Colors.blue),
-              buildTasks(state.done, Colors.green),
+              buildTasks(state.todo, const Color.fromARGB(255, 255, 0, 0)),
+              buildTasks(state.inProgress, const Color.fromARGB(255, 0, 140, 255)),
+              buildTasks(state.done, const Color.fromARGB(255, 0, 255, 8)),
             ],
           );
         },

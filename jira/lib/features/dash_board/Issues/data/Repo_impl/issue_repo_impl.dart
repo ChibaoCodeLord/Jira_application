@@ -35,4 +35,14 @@ Future<List<IssueEntity>> getIssuesByProject(String projectId) async {
   return entities;
 }
 
+@override
+Future<IssueEntity> updateIssue(IssueEntity issue) async {
+  final updatedModel = await remoteDataSource.updateIssue(IssueModel.fromEntity(issue));
+  return updatedModel.toEntity();
+}
+
+  @override
+  Future<bool> deleteIssue(String idIssue) {
+    return remoteDataSource.deleteIssue(idIssue);
+  }
 }

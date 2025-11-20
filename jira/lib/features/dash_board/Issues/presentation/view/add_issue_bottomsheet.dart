@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jira/core/api_client.dart';
 import 'package:jira/features/Users/model/user_model.dart';
+import 'package:jira/features/Users/service/user_repo.dart';
 import 'package:jira/features/dash_board/Issues/domain/Entity/issue_entity.dart';
 import 'package:jira/features/dash_board/Issues/presentation/view/assign_member_bottomsheet.dart';
 import 'package:jira/features/dash_board/projects/domain/entities/project_entity.dart';
-import 'package:jira/features/dash_board/projects/presentation/view/add_member_bottomsheet.dart';
 import 'package:jira/features/login_signup/presenation/widgets/add_project.dart';
 
 class AddIssueBottomsheet extends StatefulWidget {
@@ -25,7 +24,7 @@ class _AddIssueBottomsheetState extends State<AddIssueBottomsheet> {
 
   String _selectedType = "Task";
   String _priority = "Low";
-  bool _isLoading = false;
+  final bool _isLoading = false;
   UserModel? _selectedAssignee;
 
   void _submit() {
@@ -39,7 +38,6 @@ class _AddIssueBottomsheetState extends State<AddIssueBottomsheet> {
       );
       return;
     }
-    print(widget.project.id);
 
     final issue = IssueEntity(
       projectId: widget.project.id!,
@@ -61,26 +59,15 @@ class _AddIssueBottomsheetState extends State<AddIssueBottomsheet> {
   }
 
 
- Future<void> _loadUsers() async {
-    try {
-      final users = await getUsersInProject(widget.project.id!);
-      setState(() {
-        members = users;
-      });
-    } catch (e) {
-      print("Error fetching users: $e");
-    }
+Future<List<UserModel>> _loadUsersInProject(String projectId) async {
+  try {
+    final users = await UserService.getUsersInProject(projectId);
+    return users;
+  } catch (e) {
+    print("Error fetching users: $e");
+    return [];
   }
-
-  Future<List<UserModel>> getUsersInProject(String projectId) async {
-    final response = await ApiClient.dio.get('/projects/$projectId/members');
-    if (response.statusCode == 200 && response.data['success'] == true) {
-      final usersData = response.data['users'] as List<dynamic>;
-      return usersData.map((e) => UserModel.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to load users');
-    }
-  }
+}
 
 
   @override
@@ -93,7 +80,7 @@ class _AddIssueBottomsheetState extends State<AddIssueBottomsheet> {
   @override
   void initState() {
     //get member by project id
-    _loadUsers();
+    _loadUsersInProject(widget.project.id!);
     super.initState();
   }
 

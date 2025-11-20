@@ -14,6 +14,6 @@ route.put("/", verifyToken, );
 
 
 // get user in project
-route.get("/:projectId/users", verifyToken, getUserInProject);
+route.get("/:projectId/members", verifyToken, getUserInProject);
 
 export default route;

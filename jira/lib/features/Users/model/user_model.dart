@@ -32,8 +32,11 @@ class UserModel {
       status: json['status'] ?? '',
       userName: json['userName'] ?? '',
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : null,
+    ? DateTime.fromMillisecondsSinceEpoch(
+        (json['createdAt']['_seconds'] * 1000) +
+        (json['createdAt']['_nanoseconds'] ~/ 1000000),
+      )
+    : null,
     );
   }
 

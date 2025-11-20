@@ -17,7 +17,7 @@ class _AssignMemberBottomSheetState extends State<AssignMemberBottomSheet> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState(); 
     displayedMembers = widget.members;
   }
 
@@ -191,18 +191,14 @@ class _AssignMemberBottomSheetState extends State<AssignMemberBottomSheet> {
             child: ElevatedButton.icon(
               onPressed: () {
                 final selectedUsers = widget.members
-                    .where((u) => selectedIds.contains(u.uid))
-                    .map((u) => {
-                          'uid': u.uid,
-                          'email': u.email,
-                        })
-                    .toList();
+                    .where((u) => selectedIds.contains(u.uid)).toList();
+                    
                 Navigator.pop(context, selectedUsers);
               },
               icon: const Icon(Icons.person_add_alt_1),
               label: const Text("Assign Selected"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: const Color.fromARGB(255, 12, 12, 13),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               ),
             ),

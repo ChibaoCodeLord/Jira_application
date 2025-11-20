@@ -19,12 +19,16 @@ import 'package:jira/features/dash_board/Issues/domain/Repositories/issue_reposi
     as _i521;
 import 'package:jira/features/dash_board/Issues/domain/Usecase/create_issue_usecase.dart'
     as _i116;
+import 'package:jira/features/dash_board/Issues/domain/Usecase/delete_issue_usecase.dart'
+    as _i177;
 import 'package:jira/features/dash_board/Issues/domain/Usecase/get_issue_by_id.dart'
     as _i879;
 import 'package:jira/features/dash_board/Issues/domain/Usecase/get_issue_by_project_usecase.dart'
     as _i492;
 import 'package:jira/features/dash_board/Issues/domain/Usecase/get_issues_by_assignee.dart'
     as _i211;
+import 'package:jira/features/dash_board/Issues/domain/Usecase/update_issue_usecase.dart'
+    as _i385;
 import 'package:jira/features/dash_board/Issues/presentation/cubit/issue_cubit.dart'
     as _i390;
 import 'package:jira/features/dash_board/projects/data/data_source/project_remote_datasource.dart'
@@ -70,12 +74,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i492.GetIssueByProjectUsecase(gh<_i521.IssueRepository>()));
     gh.factory<_i879.GetIssueByIdUsecase>(
         () => _i879.GetIssueByIdUsecase(gh<_i521.IssueRepository>()));
-    gh.factory<_i390.IssueCubit>(() => _i390.IssueCubit(
-          gh<_i116.CreateIssueUsecase>(),
-          gh<_i492.GetIssueByProjectUsecase>(),
-          gh<_i211.GetIssuesByAssigneeUsecase>(),
-          gh<_i879.GetIssueByIdUsecase>(),
-        ));
+    gh.factory<_i385.UpdateIssueUsecase>(
+        () => _i385.UpdateIssueUsecase(gh<_i521.IssueRepository>()));
+    gh.factory<_i177.DeleteIssueUsecase>(
+        () => _i177.DeleteIssueUsecase(gh<_i521.IssueRepository>()));
     gh.factory<_i688.ProjectRepository>(
         () => _i77.ProjectRepositoryImpl(gh<_i355.ProjectRemoteDataSource>()));
     gh.factory<_i134.RemoveProjectUsecase>(
@@ -86,6 +88,14 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i644.CreateProjectUseCase(gh<_i688.ProjectRepository>()));
     gh.factory<_i723.UpdateProjectUsecase>(
         () => _i723.UpdateProjectUsecase(gh<_i688.ProjectRepository>()));
+    gh.factory<_i390.IssueCubit>(() => _i390.IssueCubit(
+          gh<_i116.CreateIssueUsecase>(),
+          gh<_i492.GetIssueByProjectUsecase>(),
+          gh<_i211.GetIssuesByAssigneeUsecase>(),
+          gh<_i879.GetIssueByIdUsecase>(),
+          gh<_i385.UpdateIssueUsecase>(),
+          gh<_i177.DeleteIssueUsecase>(),
+        ));
     gh.factory<_i32.ProjectCubit>(() => _i32.ProjectCubit(
           getAllProjectsUseCase: gh<_i760.GetAllProjectsUsecase>(),
           createProjectUseCase: gh<_i644.CreateProjectUseCase>(),

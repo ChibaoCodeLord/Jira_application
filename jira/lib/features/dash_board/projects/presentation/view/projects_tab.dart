@@ -73,7 +73,7 @@ class ProjectsTab extends StatelessWidget {
                             Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => BlocProvider(
+                              builder: (context) => BlocProvider(
                                 create: (_) => getIt<IssueCubit>(),
                                 child: ProjectDetailPage(project: project),
                               ),
