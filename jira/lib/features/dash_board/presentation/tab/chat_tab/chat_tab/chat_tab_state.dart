@@ -3,11 +3,12 @@ import 'package:jira/features/dash_board/presentation/tab/chat_tab/chat/chat_ite
 class ChatTabState {
   final List<ChatItemModel> allFriends;
   final List<ChatItemModel> filteredFriends;
-  final List<ChatItemModel>
-  searchResults; // kết quả tìm kiếm users (không chỉ bạn bè)
+  final List<ChatItemModel> searchResults;
   final String searchQuery;
   final bool isLoadingFriends;
   final String errorMessage;
+  final bool isGlobalSearchMode;
+  final bool isSearchingUsers;
 
   const ChatTabState({
     this.allFriends = const [],
@@ -16,6 +17,8 @@ class ChatTabState {
     this.searchQuery = '',
     this.isLoadingFriends = false,
     this.errorMessage = '',
+    this.isGlobalSearchMode = false,
+    this.isSearchingUsers = false,
   });
 
   ChatTabState copyWith({
@@ -25,6 +28,8 @@ class ChatTabState {
     String? searchQuery,
     bool? isLoadingFriends,
     String? errorMessage,
+    bool? isGlobalSearchMode,
+    bool? isSearchingUsers,
   }) {
     return ChatTabState(
       allFriends: allFriends ?? this.allFriends,
@@ -33,6 +38,8 @@ class ChatTabState {
       searchQuery: searchQuery ?? this.searchQuery,
       isLoadingFriends: isLoadingFriends ?? this.isLoadingFriends,
       errorMessage: errorMessage ?? this.errorMessage,
+      isGlobalSearchMode: isGlobalSearchMode ?? this.isGlobalSearchMode,
+      isSearchingUsers: isSearchingUsers ?? this.isSearchingUsers,
     );
   }
 }

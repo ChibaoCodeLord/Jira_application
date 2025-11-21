@@ -37,10 +37,11 @@ class _ChatSearchBarState extends State<ChatSearchBar> {
       child: TextField(
         controller: _controller,
         decoration: InputDecoration(
-          hintText: widget.showFriendsList
-              ? "Tìm bạn bè..."
-              : "Tìm kiếm người hoặc chat...",
-          prefixIcon: const Icon(Icons.search, color: Color(0xFF6554C0)),
+          hintText: widget.showFriendsList ? "Tìm bạn bè..." : "Tìm kiếm",
+          prefixIcon: const Icon(
+            Icons.search,
+            color: Color.fromARGB(255, 66, 39, 214),
+          ),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear),

@@ -1,4 +1,3 @@
-// lib/common/widgets/avatar_widget.dart
 import 'package:flutter/material.dart';
 
 class AvatarWidget extends StatelessWidget {
@@ -23,9 +22,6 @@ class AvatarWidget extends StatelessWidget {
     final diameter = radius * 2;
     final hasValidUrl = url != null && url!.trim().isNotEmpty;
 
-    // Debug (bỏ comment khi cần)
-    // debugPrint('AvatarWidget → url: "$url" | initials: "$initials"');
-
     if (!hasValidUrl) {
       return _buildFallback(diameter);
     }
@@ -39,13 +35,12 @@ class AvatarWidget extends StatelessWidget {
           width: diameter,
           height: diameter,
           fit: BoxFit.cover,
-          cacheWidth: (diameter * 3).round(), // Tối ưu bộ nhớ
+          cacheWidth: (diameter * 3).round(),
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
             return _buildLoading(diameter);
           },
           errorBuilder: (context, error, stackTrace) {
-            // debugPrint('Image load error: $error');
             return _buildFallback(diameter);
           },
         ),

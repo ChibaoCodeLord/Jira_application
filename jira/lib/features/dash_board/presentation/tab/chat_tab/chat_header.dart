@@ -86,18 +86,16 @@ class _ChatHeaderState extends State<ChatHeader> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: selected
-              ? const Color(0xFF6554C0).withOpacity(0.1)
-              : Colors.white,
+          color: selected ? AppColors.primary.withOpacity(0.1) : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected ? const Color(0xFF6554C0) : Colors.grey.shade400,
+            color: selected ? AppColors.primary : Colors.grey.shade400,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? const Color(0xFF6554C0) : Colors.black87,
+            color: selected ? AppColors.primary : Colors.black87,
             fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),

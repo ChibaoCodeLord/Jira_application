@@ -233,7 +233,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
             }
 
             final chatRef = await FirebaseConfig.firestore
-                .collection('chats')
+                .collection( 'chats')
                 .add({
                   'name': otherUserName ?? '', // Lưu tên ngay khi tạo
                   'isGroup': false,

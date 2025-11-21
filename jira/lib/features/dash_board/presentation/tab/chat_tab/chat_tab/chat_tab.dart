@@ -68,13 +68,11 @@ class _ChatTabState extends State<ChatTab> {
                   child: BlocBuilder<ChatTabCubit, ChatTabState>(
                     builder: (context, state) {
                       if (showFriendsList) {
-                        return const FriendsListView();
+                        return FriendsListView();
                       }
-                      // nếu có searchQuery -> show search results (users)
                       if (state.searchQuery.isNotEmpty) {
-                        return const SearchResultView();
+                        return SearchResultView();
                       }
-                      // mặc định show chat list
                       return ChatListView(
                         selectedTab: selectedTab,
                         searchQuery: state.searchQuery,

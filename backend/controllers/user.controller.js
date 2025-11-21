@@ -18,3 +18,21 @@ export const searchUser = async (req, res) => {
     return sendErrorResponse(res, 500, err.message);
   }
 };
+
+export const getUserById = async (req, res) => {
+  console.log('Called getUserById');
+  try {
+    const userId = req.params.id;
+    
+    const user = await User.getById(userId);
+    if (!user) {
+      return sendErrorResponse(res, 404, "User not found");
+    }
+    
+    return sendSuccessResponse(res, 200, "User retrieved successfully", user);
+  }
+  catch (err) {
+    console.error(err);
+    return sendErrorResponse(res, 500, err.message);
+  }
+}
