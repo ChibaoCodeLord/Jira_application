@@ -12,13 +12,16 @@ class ChatDetailPage extends StatefulWidget {
   final String chatName;
   final bool isGroup;
   final List<String> members;
-
+  final String? opponentAvatarUrl;
+  final String? opponentName;
   const ChatDetailPage({
     super.key,
     required this.chatId,
     required this.chatName,
     required this.isGroup,
     required this.members,
+    this.opponentAvatarUrl,
+    this.opponentName,
   });
 
   @override
@@ -103,6 +106,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       message: message,
                       isCurrentUser:
                           message.from == FirebaseConfig.auth.currentUser?.uid,
+                      opponentAvatarUrl: widget.opponentAvatarUrl,
+                      opponentName: widget.opponentName,
+                      isGroup: widget.isGroup,
                     );
                   },
                 );
