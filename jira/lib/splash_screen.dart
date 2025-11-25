@@ -4,6 +4,8 @@ import 'package:jira/core/injection.dart';
 import 'package:jira/features/dash_board/projects/presentation/cubit/project_cubit.dart';
 import 'package:jira/features/dash_board/presentation/dash_board.dart';
 import 'package:jira/features/login_signup/domain/cubit/AuthCubit.dart';
+import 'package:jira/features/login_signup/presenation/login/login_view.dart';
+import 'package:jira/features/login_signup/presenation/onboarding/onboarding_view.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -12,29 +14,19 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, bool>(
       builder: (context, isLoggedIn) {
-          // Wrap DashboardScreen với ProjectCubit
+        // Wrap DashboardScreen với ProjectCubit
         if (isLoggedIn) {
           return MultiBlocProvider(
             providers: [
-              BlocProvider<ProjectCubit>(
-                create: (_) => getIt<ProjectCubit>()
-              ),
+              BlocProvider<ProjectCubit>(create: (_) => getIt<ProjectCubit>()),
             ],
             child: const DashboardScreen(),
           );
         }
         else {
-         return MultiBlocProvider(
-            providers: [
-              BlocProvider<ProjectCubit>(
-                create: (_) => getIt<ProjectCubit>()
-              ),
-            ],
-            child: const DashboardScreen(),
-          );
+         return OnboardingScreen();
         }
-        } 
-      
+      },
     );
   }
 }
