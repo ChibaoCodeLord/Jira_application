@@ -84,8 +84,9 @@ class _AddFriendContent extends StatelessWidget {
             Expanded(
               child: BlocBuilder<AddFriendCubit, AddFriendState>(
                 builder: (context, state) {
-                  if (state.isLoading)
+                  if (state.isLoading) {
                     return const Center(child: CircularProgressIndicator());
+                  }
                   if (state.suggestions.isEmpty && state.query.length >= 2) {
                     return const Center(child: Text("Không tìm thấy"));
                   }

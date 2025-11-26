@@ -71,8 +71,9 @@ class ChatTile extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final date = DateTime(time.year, time.month, time.day);
-    if (date == today)
+    if (date == today) {
       return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+    }
     if (date == today.subtract(const Duration(days: 1))) return 'Hôm qua';
     return '${time.day}/${time.month}';
   }

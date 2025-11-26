@@ -4,16 +4,12 @@ import {createIssue , getIssuesByProject , getIssuesByAssignee } from "../contro
 import {assignUserToIssue , updateIssue  , deleteIssue } from  "../controllers/issue.controller.js";
 const route = express.Router();
 
-//CRUD
-route.post("/", verifyToken , createIssue);
+route.post("/", verifyToken, createIssue);
 route.get("/", verifyToken, getIssuesByProject);
-route.put("/:issueId" , verifyToken , updateIssue );
-route.delete('/:issueId' , verifyToken , deleteIssue );
+route.get("/assignee", verifyToken, getIssuesByAssignee);
 
-
-//
-route.get("/assignee/:assigneeId", verifyToken, getIssuesByAssignee);
+route.put("/:issueId", verifyToken, updateIssue);
 route.put("/:issueId/assign", verifyToken, assignUserToIssue);
-
+route.delete("/:issueId", verifyToken, deleteIssue);
 
 export default route;

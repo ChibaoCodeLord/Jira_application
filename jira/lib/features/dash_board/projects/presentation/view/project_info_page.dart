@@ -227,10 +227,10 @@ Future<void> _edit({
                         options != null && options.isNotEmpty
                             ? controller.text
                             : controller.text),
-                    child: const Text("Save"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade600,
                     ),
+                    child: const Text("Save"),
                   ),
                 ],
               ),

@@ -52,7 +52,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
             return;
           }
 
-          final chatData = chatDoc.data() as Map<String, dynamic>? ?? {};
+          final chatData = chatDoc.data() ?? {};
           final isGroupChat = chatData['isGroup'] == true;
 
           // Cập nhật name và photoURL nếu chat có name rỗng (chỉ cho 1-1 chat)
@@ -168,7 +168,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
               final chatDoc = await chatDocRef.get();
               if (chatDoc.exists) {
-                final chatData = chatDoc.data() as Map<String, dynamic>? ?? {};
+                final chatData = chatDoc.data() ?? {};
                 final currentName = (chatData['name'] ?? '').toString();
 
                 if (currentName.isEmpty) {
