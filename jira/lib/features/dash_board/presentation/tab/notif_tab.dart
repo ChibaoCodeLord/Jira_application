@@ -11,7 +11,7 @@ class NotifTab extends StatefulWidget {
 }
 
 class _NotifTabState extends State<NotifTab> {
-  String _selectedFilter = 'All'; // 'All' or 'Unread'
+  String _selectedFilter = 'All';
 
   @override
   Widget build(BuildContext context) {
@@ -28,17 +28,14 @@ class _NotifTabState extends State<NotifTab> {
           ),
         ),
         body: const Center(
-          child: Text(
-            'Chưa đăng nhập',
-            style: TextStyle(color: Colors.grey),
-          ),
+          child: Text('Chưa đăng nhập', style: TextStyle(color: Colors.grey)),
         ),
       );
     }
 
     final col = FirebaseConfig.firestore
         .collection('users')
-               .doc(uid)
+        .doc(uid)
         .collection('notifications')
         .orderBy('timestamp', descending: true);
 
@@ -113,8 +110,7 @@ class _NotifTabState extends State<NotifTab> {
           }
 
           final allDocs = snapshot.data!.docs;
-          
-          // Filter based on selected tab
+
           final filteredDocs = _selectedFilter == 'Unread'
               ? allDocs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
@@ -128,9 +124,7 @@ class _NotifTabState extends State<NotifTab> {
           }
 
           return RefreshIndicator(
-            onRefresh: () async {
-              // Refresh logic if needed
-            },
+            onRefresh: () async {},
             color: AppColors.primary,
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
@@ -143,13 +137,15 @@ class _NotifTabState extends State<NotifTab> {
                 final timestamp = data['timestamp'] as Timestamp?;
                 final isRead = data['isRead'] as bool? ?? false;
 
+                Widget card;
+
                 if (type == 'friend_request') {
                   final status = data['status'] as String? ?? 'pending';
                   final fromName = data['fromName'] as String? ?? 'Người dùng';
                   final fromPhoto = data['fromPhoto'] as String?;
                   final fromUid = data['fromUid'] as String?;
 
-                  return _FriendRequestCard(
+                  card = _FriendRequestCard(
                     notificationDoc: d,
                     fromName: fromName,
                     fromPhoto: fromPhoto,
@@ -160,16 +156,73 @@ class _NotifTabState extends State<NotifTab> {
                     isRead: isRead,
                     onTap: () => _markAsRead(d),
                   );
+                } else {
+                  card = _GeneralNotificationCard(
+                    notificationDoc: d,
+                    title: data['title'] ?? 'Thông báo',
+                    body: data['body'] ?? '',
+                    timestamp: timestamp,
+                    isRead: isRead,
+                    onTap: () => _markAsRead(d),
+                  );
                 }
 
-                // Other notification types
-                return _GeneralNotificationCard(
-                  notificationDoc: d,
-                  title: data['title'] ?? 'Thông báo',
-                  body: data['body'] ?? '',
-                  timestamp: timestamp,
-                  isRead: isRead,
-                  onTap: () => _markAsRead(d),
+                return Dismissible(
+                  key: Key(d.id),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete_rounded,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Xóa',
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                  confirmDismiss: (_) async {
+                    return await showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        title: const Text('Xóa thông báo?'),
+                        content: const Text(
+                          'Bạn có chắc muốn xóa thông báo này không?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Hủy'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, true),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                            ),
+                            child: const Text('Xóa'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  onDismissed: (_) => _deleteNotification(d),
+                  child: card,
                 );
               },
             ),
@@ -184,6 +237,31 @@ class _NotifTabState extends State<NotifTab> {
       await doc.reference.update({'isRead': true});
     } catch (e) {
       print('[NotifTab] Error marking as read: $e');
+    }
+  }
+
+  Future<void> _deleteNotification(QueryDocumentSnapshot doc) async {
+    try {
+      await doc.reference.delete();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã xóa thông báo'),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      print('[NotifTab] Error deleting notification: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi xóa thông báo'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -222,10 +300,7 @@ class _NotifTabState extends State<NotifTab> {
             _selectedFilter == 'Unread'
                 ? 'Tất cả thông báo đã được đọc'
                 : 'Bạn sẽ nhận được thông báo ở đây',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -339,15 +414,16 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
 
     setState(() => _isProcessing = true);
     _animationController.forward();
-    widget.onTap(); // Mark as read
+    widget.onTap();
 
     try {
       final currentUserDoc = await FirebaseConfig.firestore
           .collection('users')
           .doc(widget.currentUid)
           .get();
-      final currentFriends =
-          List<String>.from(currentUserDoc.data()?['friends'] ?? []);
+      final currentFriends = List<String>.from(
+        currentUserDoc.data()?['friends'] ?? [],
+      );
 
       if (currentFriends.contains(widget.fromUid)) {
         await widget.notificationDoc.reference.update({
@@ -377,15 +453,15 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
           .collection('users')
           .doc(widget.currentUid)
           .update({
-        'friends': FieldValue.arrayUnion([widget.fromUid]),
-      });
+            'friends': FieldValue.arrayUnion([widget.fromUid]),
+          });
 
       await FirebaseConfig.firestore
           .collection('users')
           .doc(widget.fromUid)
           .update({
-        'friends': FieldValue.arrayUnion([widget.currentUid]),
-      });
+            'friends': FieldValue.arrayUnion([widget.currentUid]),
+          });
 
       await widget.notificationDoc.reference.update({
         'status': 'accepted',
@@ -419,9 +495,8 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
               .get();
           if (otherUserDoc.exists) {
             final otherUserData = otherUserDoc.data()!;
-            otherUserName = otherUserData['userName'] ??
-                otherUserData['firstName'] ??
-                '';
+            otherUserName =
+                otherUserData['userName'] ?? otherUserData['firstName'] ?? '';
             otherUserPhoto = otherUserData['photoURL'];
           }
         } catch (e) {
@@ -491,7 +566,7 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
     if (_isProcessing) return;
 
     setState(() => _isProcessing = true);
-    widget.onTap(); // Mark as read
+    widget.onTap();
 
     try {
       await widget.notificationDoc.reference.update({
@@ -538,9 +613,7 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => _isProcessing = false);
-      }
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 
@@ -552,9 +625,7 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) {
-          return 'Vừa xong';
-        }
+        if (difference.inMinutes == 0) return 'Vừa xong';
         return '${difference.inMinutes} phút trước';
       }
       return '${difference.inHours} giờ trước';
@@ -578,10 +649,7 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
         borderRadius: BorderRadius.circular(16),
         border: widget.isRead
             ? null
-            : Border.all(
-                color: AppColors.primary.withOpacity(0.3),
-                width: 1.5,
-              ),
+            : Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -602,7 +670,6 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
               children: [
                 Row(
                   children: [
-                    // Avatar with badge
                     Stack(
                       children: [
                         Container(
@@ -707,23 +774,23 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
                                 color: isPending
                                     ? AppColors.primary
                                     : isAccepted
-                                        ? Colors.green
-                                        : Colors.red,
+                                    ? Colors.green
+                                    : Colors.red,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 isPending
                                     ? 'Lời mời kết bạn'
                                     : isAccepted
-                                        ? 'Đã chấp nhận'
-                                        : 'Đã từ chối',
+                                    ? 'Đã chấp nhận'
+                                    : 'Đã từ chối',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: isPending
                                       ? Colors.grey[600]
                                       : isAccepted
-                                          ? Colors.green
-                                          : Colors.red,
+                                      ? Colors.green
+                                      : Colors.red,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -740,7 +807,9 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
                     children: [
                       Expanded(
                         child: _ActionButton(
-                          onPressed: _isProcessing ? null : _acceptFriendRequest,
+                          onPressed: _isProcessing
+                              ? null
+                              : _acceptFriendRequest,
                           label: 'Chấp nhận',
                           icon: Icons.check_circle_outline,
                           color: AppColors.primary,
@@ -750,7 +819,9 @@ class _FriendRequestCardState extends State<_FriendRequestCard>
                       const SizedBox(width: 12),
                       Expanded(
                         child: _ActionButton(
-                          onPressed: _isProcessing ? null : _declineFriendRequest,
+                          onPressed: _isProcessing
+                              ? null
+                              : _declineFriendRequest,
                           label: 'Từ chối',
                           icon: Icons.cancel_outlined,
                           color: Colors.red,
@@ -865,9 +936,7 @@ class _ActionButton extends StatelessWidget {
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -898,9 +967,7 @@ class _GeneralNotificationCard extends StatelessWidget {
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) {
-          return 'Vừa xong';
-        }
+        if (difference.inMinutes == 0) return 'Vừa xong';
         return '${difference.inMinutes} phút trước';
       }
       return '${difference.inHours} giờ trước';
@@ -921,10 +988,7 @@ class _GeneralNotificationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: isRead
             ? null
-            : Border.all(
-                color: AppColors.primary.withOpacity(0.3),
-                width: 1.5,
-              ),
+            : Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -981,7 +1045,9 @@ class _GeneralNotificationCard extends StatelessWidget {
                         title,
                         style: TextStyle(
                           fontSize: 15,
-                          fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
+                          fontWeight: isRead
+                              ? FontWeight.w600
+                              : FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
@@ -1003,10 +1069,7 @@ class _GeneralNotificationCard extends StatelessWidget {
                 if (timestamp != null)
                   Text(
                     _formatTimestamp(timestamp),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[400],
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey[400]),
                   ),
               ],
             ),
