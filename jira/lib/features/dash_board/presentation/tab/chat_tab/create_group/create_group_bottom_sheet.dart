@@ -130,15 +130,16 @@ class _CreateGroupBottomSheetState extends State<CreateGroupBottomSheet> {
                         const SizedBox(height: 12),
                         BlocBuilder<CreateGroupCubit, CreateGroupState>(
                           builder: (context, state) {
-                            if (state.isLoading)
+                            if (state.isLoading) {
                               return const Center(
                                 child: CircularProgressIndicator(),
                               );
+                            }
                             if (state.friends.isEmpty) {
                               return Center(
                                 child: Text(
-                                  state.errorMessage?.isNotEmpty == true
-                                      ? state.errorMessage!
+                                  state.errorMessage.isNotEmpty == true
+                                      ? state.errorMessage
                                       : 'Không có kết quả',
                                   style: const TextStyle(color: Colors.grey),
                                 ),
@@ -207,11 +208,11 @@ class _CreateGroupBottomSheetState extends State<CreateGroupBottomSheet> {
                                 final st = context
                                     .read<CreateGroupCubit>()
                                     .state;
-                                if (st.isSuccess)
+                                if (st.isSuccess) {
                                   _closeBottomSheet();
-                                else if (st.errorMessage?.isNotEmpty == true)
+                                } else if (st.errorMessage.isNotEmpty == true)
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(st.errorMessage!)),
+                                    SnackBar(content: Text(st.errorMessage)),
                                   );
                               },
                               child: const Text(

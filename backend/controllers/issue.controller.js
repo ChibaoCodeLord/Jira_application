@@ -189,26 +189,48 @@ export const getIssueById = async (req, res) => {
     }
 };
 
+
 export const getIssuesByAssignee = async (req, res) => {
-    try {
-        const assigneeId = req.params.assigneeId;
-        
-        const issuesSnap = await db.collection("issues")
-            .where("assigneeId", "==", assigneeId)
-            .get();
-        const issues = [];
-        
-        issuesSnap.forEach(doc => {
-            issues.push(doc.data());
-        });
-        return res.status(200).json({ issues });
-        
+  console.log("Called get Issue By assignee");
+  try {
+    const assigneeId = req.user?.uid; 
+
+    if (!assigneeId) {
+      return res.status(400).json({
+        statusCode: 400,
+        message: "Missing idUser",
+        data: [],
+      });
     }
-    catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error Internal Server !", error: error.message });
-    }
+
+    const snap = await db
+      .collection("issues")
+      .where("assigneeId", "==", assigneeId)
+      .get();
+
+    const issues = snap.docs.map(doc => ({
+      id: doc.id,      
+      ...doc.data()
+    }));
+
+    return res.json({
+      statusCode: 200,
+      message: "Success",
+      data: issues,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      statusCode: 500,
+      message: "Server Error",
+      data: [],
+      error: error.message,
+    });
+  }
 };
+
+
 
 
 export const assignUserToIssue = async (req, res) => {

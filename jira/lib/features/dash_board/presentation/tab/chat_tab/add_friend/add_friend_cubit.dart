@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:jira/core/app_colors.dart';
 import 'package:jira/core/firebase_config.dart';
 import 'add_friend_state.dart';
 

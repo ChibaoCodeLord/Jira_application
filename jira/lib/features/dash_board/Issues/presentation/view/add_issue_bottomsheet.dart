@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:jira/features/Users/model/user_model.dart';
 import 'package:jira/features/Users/service/user_repo.dart';
 import 'package:jira/features/dash_board/Issues/domain/Entity/issue_entity.dart';
-import 'package:jira/features/dash_board/Issues/presentation/view/assign_member_bottomsheet.dart';
 import 'package:jira/features/dash_board/projects/domain/entities/project_entity.dart';
 import 'package:jira/features/login_signup/presenation/widgets/add_project.dart';
 
