@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import projectRoutes from "./routes/project.routes.js";
 import usersRoutes from "./routes/user.routes.js";
 import issuesRoutes from "./routes/issue.routes.js";
-
+import commentRoutes from "./routes/comment.routes.js";
 dotenv.config()
 
 const app = express()
@@ -21,6 +21,9 @@ app.use('/api/users',  usersRoutes );
 
 //Issues 
 app.use('/api/issues',  issuesRoutes );
+
+//Comments
+app.use('api/comments', commentRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Jira Backend API running 🚀" });

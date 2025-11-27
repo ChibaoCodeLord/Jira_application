@@ -8,7 +8,6 @@ import 'package:jira/features/dash_board/Issues/presentation/widget/task_today_c
 import 'package:jira/features/dash_board/presentation/add_project_page.dart';
 import 'package:jira/features/dash_board/projects/presentation/cubit/project_cubit.dart';
 import 'package:jira/features/dash_board/projects/presentation/cubit/project_state.dart';
-import 'package:jira/features/login_signup/presenation/widgets/note_card.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
