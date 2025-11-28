@@ -14,6 +14,7 @@ class ChatDetailPage extends StatefulWidget {
   final List<String> members;
   final String? opponentAvatarUrl;
   final String? opponentName;
+
   const ChatDetailPage({
     super.key,
     required this.chatId,
@@ -84,7 +85,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 if (state.messages.isEmpty && !state.isTyping) {
                   return const Center(
                     child: Text(
-                      'Chưa có tin nhắn nào',
+                      'No messages yet',
                       style: TextStyle(color: Colors.grey),
                     ),
                   );
@@ -93,11 +94,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   reverse: true,
                   itemCount: state.messages.length + (state.isTyping ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (state.isTyping && index == 0)
+                    if (state.isTyping && index == 0) {
                       return const TypingIndicator();
+                    }
                     final messageIndex = state.isTyping ? index - 1 : index;
-                    if (messageIndex >= state.messages.length)
+                    if (messageIndex >= state.messages.length) {
                       return const SizedBox.shrink();
+                    }
                     final message = state.messages[messageIndex];
                     final isCurrentUser =
                         message.from == FirebaseConfig.auth.currentUser?.uid;
@@ -108,10 +111,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     if (!isCurrentUser) {
                       if (widget.isGroup) {
                         final userInfo = state.userInfos[message.from];
-                        senderName = userInfo?['name'] ?? 'Người dùng ẩn danh';
+                        senderName = userInfo?['name'] ?? 'Anonymous user';
                         senderAvatarUrl = userInfo?['photoURL'];
                       } else {
-                        senderName = widget.opponentName ?? 'Người dùng';
+                        senderName = widget.opponentName ?? 'User';
                         senderAvatarUrl = widget.opponentAvatarUrl;
                       }
                     }
@@ -141,7 +144,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       if (cubit != null) cubit.setTyping(text.isNotEmpty);
                     },
                     decoration: InputDecoration(
-                      hintText: 'Message...',
+                      hintText: 'Type a message...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -165,7 +168,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     if (cubit == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Lỗi: Chat chưa sẵn sàng'),
+                          content: Text('Error: Chat is not ready'),
                         ),
                       );
                       return;
