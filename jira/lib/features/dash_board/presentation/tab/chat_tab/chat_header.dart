@@ -56,7 +56,6 @@ class _ChatHeaderState extends State<ChatHeader> {
             ),
           ),
 
-          // Action buttons với style hiện đại
           Row(
             children: [
               _buildIconButton(
@@ -72,7 +71,7 @@ class _ChatHeaderState extends State<ChatHeader> {
               const SizedBox(width: 8),
               _buildIconButton(
                 icon: Icons.group_add_rounded,
-                color: Colors.green[600]!,
+                color: AppColors.primary,
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
