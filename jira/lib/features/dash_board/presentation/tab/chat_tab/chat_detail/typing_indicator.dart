@@ -1,5 +1,3 @@
-// features/dash_board/presentation/tab/chat_tab/components/typing_indicator.dart
-
 import 'package:flutter/material.dart';
 
 class TypingIndicator extends StatefulWidget {

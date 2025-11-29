@@ -28,7 +28,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     try {
       final uid = FirebaseConfig.auth.currentUser?.uid;
       if (uid == null) {
-        emit(state.copyWith(errorMessage: 'User chưa đăng nhập'));
+        emit(state.copyWith(errorMessage: 'User not logged in'));
         if (!_initCompleter.isCompleted) _initCompleter.complete();
         return;
       }
@@ -44,7 +44,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
           final chatDoc = await chatDocRef.get();
           if (!chatDoc.exists) {
-            emit(state.copyWith(errorMessage: 'Chat không tồn tại'));
+            emit(state.copyWith(errorMessage: 'Chat does not exist'));
             if (!_initCompleter.isCompleted) _initCompleter.complete();
             return;
           }
@@ -236,13 +236,13 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
         _loadMessages();
         _listenToTypingStatus();
       } else {
-        emit(state.copyWith(errorMessage: 'Không thể xác định chat ID'));
+        emit(state.copyWith(errorMessage: 'Unable to determine chat ID'));
       }
 
       if (!_initCompleter.isCompleted) _initCompleter.complete();
     } catch (e, st) {
       print('[ChatDetailCubit._init] Error: $e\n$st');
-      emit(state.copyWith(errorMessage: 'Lỗi khởi tạo chat: $e'));
+      emit(state.copyWith(errorMessage: 'Chat initialization error: $e'));
       if (!_initCompleter.isCompleted) _initCompleter.complete();
     } finally {
       _isInitializing = false;
@@ -292,7 +292,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
             print('[ChatDetailCubit._loadMessages] Error: $e\n$st');
             emit(
               state.copyWith(
-                errorMessage: 'Lỗi tải tin nhắn: $e',
+                errorMessage: 'Error loading messages: $e',
                 isLoading: false,
               ),
             );
@@ -328,7 +328,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       for (final doc in snapshot.docs) {
         final data = doc.data();
         newUserInfos[doc.id] = {
-          'name': data['userName'] ?? data['firstName'] ?? 'Người dùng ẩn danh',
+          'name': data['userName'] ?? data['firstName'] ?? 'Anonymous user',
           'photoURL': data['photoURL'],
         };
       }
@@ -371,7 +371,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
     try {
       final uid = FirebaseConfig.auth.currentUser?.uid;
       if (uid == null) {
-        emit(state.copyWith(errorMessage: 'User chưa đăng nhập'));
+        emit(state.copyWith(errorMessage: 'User not logged in'));
         return;
       }
 
@@ -384,12 +384,12 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
 
       if (_chatDocId == null) {
         if (initialIsChatId) {
-          emit(state.copyWith(errorMessage: 'Chat ID không hợp lệ'));
+          emit(state.copyWith(errorMessage: 'Invalid chat ID'));
           return;
         }
         await _init();
         if (_chatDocId == null) {
-          emit(state.copyWith(errorMessage: 'Không thể xác định chat id'));
+          emit(state.copyWith(errorMessage: 'Unable to determine chat ID'));
           return;
         }
       }
@@ -401,7 +401,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
           .get();
 
       if (!chatDoc.exists) {
-        emit(state.copyWith(errorMessage: 'Chat không tồn tại'));
+        emit(state.copyWith(errorMessage: 'Chat does not exist'));
         return;
       }
 
@@ -426,7 +426,7 @@ class ChatDetailCubit extends Cubit<ChatDetailState> {
       await setTyping(false);
     } catch (e, st) {
       print('[ChatDetailCubit.sendMessage] Error: $e\n$st');
-      emit(state.copyWith(errorMessage: 'Lỗi gửi tin nhắn: $e'));
+      emit(state.copyWith(errorMessage: 'Error sending message: $e'));
     }
   }
 
