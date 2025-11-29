@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jira/core/app_colors.dart';
 import 'package:jira/core/firebase_config.dart';
+import 'package:jira/features/dash_board/presentation/tab/chat_tab/chat_detail/chat_infor_page.dart';
+import 'package:jira/features/dash_board/presentation/tab/chat_tab/chat_detail/message_mubble.dart';
+import 'package:jira/features/dash_board/presentation/tab/chat_tab/chat_detail/typing_indicator.dart';
 import 'chat_detail_cubit.dart';
 import 'chat_detail_state.dart';
-import 'message_mubble.dart';
-import 'typing_indicator.dart';
 
 class ChatDetailPage extends StatefulWidget {
   final String chatId;
@@ -14,6 +17,7 @@ class ChatDetailPage extends StatefulWidget {
   final List<String> members;
   final String? opponentAvatarUrl;
   final String? opponentName;
+
   const ChatDetailPage({
     super.key,
     required this.chatId,
@@ -43,6 +47,24 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     super.dispose();
   }
 
+  // Handle tap on header
+  void _onHeaderTap(ChatDetailState state) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatInfoPage(
+          chatId: widget.chatId,
+          chatName: widget.chatName,
+          isGroup: widget.isGroup,
+          members: widget.members,
+          opponentAvatarUrl: widget.opponentAvatarUrl,
+          opponentName: widget.opponentName,
+          memberInfos: state.userInfos,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,28 +72,45 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.chatName,
-              style: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+        title: BlocBuilder<ChatDetailCubit, ChatDetailState>(
+          builder: (context, state) {
+            return GestureDetector(
+              onTap: () => _onHeaderTap(state),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.chatName,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  if (widget.isGroup)
+                    Text(
+                      '${widget.members.length} members',
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                ],
               ),
-            ),
-            if (widget.isGroup)
-              Text(
-                '${widget.members.length} members',
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-          ],
+            );
+          },
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          BlocBuilder<ChatDetailCubit, ChatDetailState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: const Icon(Icons.info_outline, color: Colors.black),
+                onPressed: () => _onHeaderTap(state),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -84,22 +123,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 if (state.messages.isEmpty && !state.isTyping) {
                   return const Center(
                     child: Text(
-                      'Chưa có tin nhắn nào',
+                      'No messages yet',
                       style: TextStyle(color: Colors.grey),
                     ),
                   );
                 }
                 return ListView.builder(
                   reverse: true,
+                  padding: const EdgeInsets.only(bottom: 8),
                   itemCount: state.messages.length + (state.isTyping ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (state.isTyping && index == 0) {
                       return const TypingIndicator();
                     }
                     final messageIndex = state.isTyping ? index - 1 : index;
-                    if (messageIndex >= state.messages.length) {
-                      return const SizedBox.shrink();
-                    }
                     final message = state.messages[messageIndex];
                     final isCurrentUser =
                         message.from == FirebaseConfig.auth.currentUser?.uid;
@@ -109,11 +146,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
                     if (!isCurrentUser) {
                       if (widget.isGroup) {
-                        final userInfo = state.userInfos[message.from];
-                        senderName = userInfo?['name'] ?? 'Người dùng ẩn danh';
-                        senderAvatarUrl = userInfo?['photoURL'];
+                        final info = state.userInfos[message.from];
+                        senderName = info?['name'] ?? 'User';
+                        senderAvatarUrl = info?['photoURL'];
                       } else {
-                        senderName = widget.opponentName ?? 'Người dùng';
+                        senderName = widget.opponentName ?? 'User';
                         senderAvatarUrl = widget.opponentAvatarUrl;
                       }
                     }
@@ -121,8 +158,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     return MessageBubble(
                       message: message,
                       isCurrentUser: isCurrentUser,
+                      opponentName: senderName ?? '',
                       opponentAvatarUrl: senderAvatarUrl,
-                      opponentName: senderName,
                       isGroup: widget.isGroup,
                     );
                   },
@@ -130,6 +167,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               },
             ),
           ),
+          // Message input field
           Container(
             color: Colors.white,
             padding: const EdgeInsets.all(8.0),
@@ -139,11 +177,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   child: TextField(
                     controller: _messageController,
                     onChanged: (text) {
-                      final cubit = context.read<ChatDetailCubit?>();
-                      if (cubit != null) cubit.setTyping(text.isNotEmpty);
+                      context.read<ChatDetailCubit>().setTyping(
+                        text.isNotEmpty,
+                      );
                     },
                     decoration: InputDecoration(
-                      hintText: 'Message...',
+                      hintText: 'Type a message...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -163,15 +202,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   onPressed: () async {
                     final text = _messageController.text.trim();
                     if (text.isEmpty) return;
-                    final cubit = context.read<ChatDetailCubit?>();
-                    if (cubit == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Lỗi: Chat chưa sẵn sàng'),
-                        ),
-                      );
-                      return;
-                    }
+
+                    final cubit = context.read<ChatDetailCubit>();
                     await cubit.sendMessage(text);
                     _messageController.clear();
                     cubit.setTyping(false);
