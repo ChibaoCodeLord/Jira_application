@@ -6,6 +6,8 @@ class ProjectRow extends StatelessWidget {
   final String? status;
   final VoidCallback? onDetail;
   final VoidCallback? onDelete;
+  final VoidCallback? onLeave;
+
 
   const ProjectRow({
     super.key,
@@ -13,7 +15,8 @@ class ProjectRow extends StatelessWidget {
     required this.projectType,
     this.status,
     this.onDetail,
-    this.onDelete,
+    this.onDelete, 
+    this.onLeave,
   });
 
   Color _getStatusColor() {
@@ -228,6 +231,110 @@ class ProjectRow extends StatelessWidget {
                             backgroundColor: Colors.red.shade700,
                           ),
                         );
+                      }
+                    },
+                  ),
+                ),
+
+              //Leave 
+              if (onLeave != null)
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 250, 249, 248).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.exit_to_app_outlined,
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    tooltip: 'Leave project',
+                    splashRadius: 20,
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          backgroundColor: const Color.fromARGB(255, 30, 30, 30),
+                          insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.logout_rounded, size: 48, color: Colors.amber),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Leave Project',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Are you sure you want to leave this project? You will no longer have access.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 14, color: Colors.white70),
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    OutlinedButton(
+                                      onPressed: () => Navigator.pop(context, false),
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        side: const BorderSide(color: Colors.white70),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                        child: Text(
+                                          'Cancel',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(context, true),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red.shade700,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                        child: Text(
+                                          'Leave',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+
+                      if (confirmed == true) {
+                        onLeave!();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("You have left the project"),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
                       }
                     },
                   ),

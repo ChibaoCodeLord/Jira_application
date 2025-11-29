@@ -1,5 +1,6 @@
 import {db} from "../config/db.js"
 import  { sendSuccessResponse, sendErrorResponse } from "../utils/response.js";
+import { addNotification } from "./notify.controller.js";
 //DeleIssue 
 
 
@@ -300,6 +301,21 @@ export const createIssue = async (req, res) => {
       await parentRef.update({
         subTasks: [...parentData.subTasks, issueId],
         updatedAt: new Date(),
+      });
+    }
+
+    if (assigneeId) {
+      const reporterSnap = await db.collection("users").doc(userId).get();
+      const reporterName = reporterSnap.exists ? reporterSnap.data().userName : "Reporter";
+
+      await addNotification(assigneeId, {
+        type: "task_assigned",
+        fromUid: userId,
+        fromName: reporterName,
+        content: `${reporterName} assigned you to issue "${title}"`,
+        timestamp: new Date(),
+        isRead: false,
+        status: "pending",
       });
     }
 

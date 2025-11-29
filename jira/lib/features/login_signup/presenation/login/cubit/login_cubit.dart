@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:jira/core/injection.dart';
+import 'package:jira/features/login_signup/domain/cubit/AuthCubit.dart';
 import 'package:jira/features/login_signup/presenation/login/cubit/login_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginCubit extends Cubit<LoginState> {
+  final AuthCubit _authCubit = getIt<AuthCubit>();
+
   LoginCubit()
     : super(
         LoginState(
@@ -97,7 +101,7 @@ class LoginCubit extends Cubit<LoginState> {
           final storage = FlutterSecureStorage();
           await storage.write(key: 'idToken', value: token);
         }
-
+        _authCubit.login(uid);
         emit(
           state.copyWith(
             isloading: false,

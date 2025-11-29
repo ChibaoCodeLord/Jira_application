@@ -27,6 +27,30 @@ Widget buildTextField({
   }
 
 
+Widget buildAssigneeField({
+     String? label,
+    required IconData icon,
+    int maxLines = 1,
+  }) {
+    return TextField(
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.blueAccent),
+        filled: true,
+        fillColor: Colors.blue[50]?.withOpacity(0.3),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
+        ),
+      ),
+    );
+  }
+
+
 
 Widget buildDropdown(
   String selectedType,

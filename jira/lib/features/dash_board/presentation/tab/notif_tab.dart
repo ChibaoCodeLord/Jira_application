@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jira/core/firebase_config.dart';
 import 'package:jira/core/app_colors.dart';
+import 'package:jira/features/notification/presentation/general_notification_card.dart';
 
 class NotifTab extends StatefulWidget {
   const NotifTab({super.key});
@@ -157,14 +158,14 @@ class _NotifTabState extends State<NotifTab> {
                     onTap: () => _markAsRead(d),
                   );
                 } else {
-                  card = _GeneralNotificationCard(
-                    notificationDoc: d,
-                    title: data['title'] ?? 'Notification',
-                    body: data['body'] ?? '',
-                    timestamp: timestamp,
-                    isRead: isRead,
-                    onTap: () => _markAsRead(d),
-                  );
+
+                  card = GeneralNotificationCard(
+                      title: data['content'] as String? ?? 'Notification',
+                      body: ' ',
+                      timestamp: timestamp,
+                      isRead: isRead,
+                      onTap: () => _markAsRead(d),
+                    );
                 }
 
                 return Dismissible(
@@ -188,7 +189,7 @@ class _NotifTabState extends State<NotifTab> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          'Xóa',
+                          'Delete',
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ],
@@ -215,7 +216,7 @@ class _NotifTabState extends State<NotifTab> {
                             style: TextButton.styleFrom(
                               foregroundColor: Colors.red,
                             ),
-                            child: const Text('Xóa'),
+                            child: const Text('Delete'),
                           ),
                         ],
                       ),
@@ -946,143 +947,142 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-class _GeneralNotificationCard extends StatelessWidget {
-  final QueryDocumentSnapshot notificationDoc;
-  final String title;
-  final String body;
-  final Timestamp? timestamp;
-  final bool isRead;
-  final VoidCallback onTap;
+// class _GeneralNotificationCard extends StatelessWidget {
+//   final QueryDocumentSnapshot notificationDoc;
+//   final String title;
+//   final String body;
+//   final Timestamp? timestamp;
+//   final bool isRead;
+//   final VoidCallback onTap;
 
-  const _GeneralNotificationCard({
-    required this.notificationDoc,
-    required this.title,
-    required this.body,
-    this.timestamp,
-    required this.isRead,
-    required this.onTap,
-  });
-  String _formatTimestamp(Timestamp? timestamp) {
-    if (timestamp == null) return '';
-    final date = timestamp.toDate();
-    final now = DateTime.now();
-    final difference = now.difference(date);
+//   const _GeneralNotificationCard({
+//     required this.notificationDoc,
+//     required this.title,
+//     required this.body,
+//     this.timestamp,
+//     required this.isRead,
+//     required this.onTap,
+//   });
+//   String _formatTimestamp(Timestamp? timestamp) {
+//     if (timestamp == null) return '';
+//     final date = timestamp.toDate();
+//     final now = DateTime.now();
+//     final difference = now.difference(date);
 
-    String plural(int value, String word) {
-      return value == 1 ? '$value $word ago' : '$value ${word}s ago';
-    }
+//     String plural(int value, String word) {
+//       return value == 1 ? '$value $word ago' : '$value ${word}s ago';
+//     }
 
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) return 'Just now';
-        return plural(difference.inMinutes, 'minute');
-      }
-      return plural(difference.inHours, 'hour');
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return plural(difference.inDays, 'day');
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
-    }
-  }
+//     if (difference.inDays == 0) {
+//       if (difference.inHours == 0) {
+//         if (difference.inMinutes == 0) return 'Just now';
+//         return plural(difference.inMinutes, 'minute');
+//       }
+//       return plural(difference.inHours, 'hour');
+//     } else if (difference.inDays == 1) {
+//       return 'Yesterday';
+//     } else if (difference.inDays < 7) {
+//       return plural(difference.inDays, 'day');
+//     } else {
+//       return '${date.day}/${date.month}/${date.year}';
+//     }
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: isRead
-            ? null
-            : Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Stack(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.notifications_outlined,
-                        color: AppColors.primary,
-                        size: 24,
-                      ),
-                    ),
-                    if (!isRead)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: isRead
-                              ? FontWeight.w600
-                              : FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      if (body.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          body,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[600],
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                if (timestamp != null)
-                  Text(
-                    _formatTimestamp(timestamp),
-                    style: TextStyle(fontSize: 11, color: Colors.grey[400]),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(16),
+//         border: isRead
+//             ? null
+//             : Border.all(color: AppColors.primary.withOpacity(0.3), width: 1.5),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.05),
+//             blurRadius: 10,
+//             offset: const Offset(0, 2),
+//           ),
+//         ],
+//       ),
+//       child: Material(
+//         color: Colors.transparent,
+//         child: InkWell(
+//           borderRadius: BorderRadius.circular(16),
+//           onTap: onTap,
+//           child: Padding(
+//             padding: const EdgeInsets.all(16),
+//             child: Row(
+//               children: [
+//                 Stack(
+//                   children: [
+//                     Container(
+//                       width: 48,
+//                       height: 48,
+//                       decoration: BoxDecoration(
+//                         color: AppColors.primary.withOpacity(0.1),
+//                         borderRadius: BorderRadius.circular(12),
+//                       ),
+//                       child: Icon(
+//                         Icons.notifications_outlined,
+//                         color: AppColors.primary,
+//                         size: 24,
+//                       ),
+//                     ),
+//                     if (!isRead)
+//                       Positioned(
+//                         right: 0,
+//                         top: 0,
+//                         child: Container(
+//                           width: 12,
+//                           height: 12,
+//                           decoration: const BoxDecoration(
+//                             color: Colors.red,
+//                             shape: BoxShape.circle,
+//                           ),
+//                         ),
+//                       ),
+//                   ],
+//                 ),
+//                 const SizedBox(width: 16),
+//                 Expanded(
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         title,
+//                         style: TextStyle(
+//                           fontSize: 15,
+//                           fontWeight: isRead
+//                               ? FontWeight.w600
+//                               : FontWeight.bold,
+//                           color: Colors.black87,
+//                         ),
+//                       ),
+//                       if (body.isNotEmpty) ...[
+//                         const SizedBox(height: 4),
+//                         Text(
+//                           body,
+//                           style: TextStyle(
+//                             fontSize: 13,
+//                             color: Colors.grey[600],
+//                           ),
+//                           maxLines: 2,
+//                           overflow: TextOverflow.ellipsis,
+//                         ),
+//                       ],
+//                     ],
+//                   ),
+//                 ),
+//                 if (timestamp != null)
+//                   Text(
+//                     _formatTimestamp(timestamp),
+//                     style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+//                   ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }}

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:jira/features/dash_board/projects/data/models/project_model.dart';
 import 'package:jira/features/dash_board/projects/domain/entities/project_entity.dart';
 import 'package:jira/features/dash_board/projects/domain/usecases/create_project_usecase.dart';
 import 'package:jira/features/dash_board/projects/domain/usecases/get_all_projects_usecase.dart';
@@ -99,7 +100,6 @@ Future<void> updateProject(ProjectEntity project) async {
 
     if (index != -1) {
       updatedProjects[index] = updatedProject; 
-      print("Tran Van Huan ");
     } else {
       updatedProjects.add(updatedProject); 
     }
@@ -117,6 +117,40 @@ Future<void> updateProject(ProjectEntity project) async {
     ));
   }
 }
+
+Future<void> onLeaveProject(ProjectEntity project, String userId) async {
+  emit(state.copyWith(isLoading: true, isSuccess: false, errorMessage: ''));
+
+  try {
+    final updatedMembers = List<String>.from(project.members ?? [])..remove(userId);
+
+
+    final projectModel = ProjectModel.fromEntity(project);
+    final updatedProject = projectModel.copyWith(members: updatedMembers);
+
+
+    await updateProjectUsecase(updatedProject.toEntity());
+
+    final updatedProjects = state.projects
+        .where((p) => p.id != project.id)
+        .toList();
+
+    emit(state.copyWith(
+      isLoading: false,
+      isSuccess: true,
+      projects: updatedProjects,
+    ));
+  } catch (e) {
+    emit(state.copyWith(
+      isLoading: false,
+      isSuccess: false,
+      errorMessage: 'Failed to leave project: $e',
+    ));
+  }
+}
+
+
+
 
 
   void resetStatus() {

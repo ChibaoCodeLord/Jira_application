@@ -60,6 +60,8 @@ import 'package:jira/features/dash_board/projects/domain/usecases/update_project
     as _i723;
 import 'package:jira/features/dash_board/projects/presentation/cubit/project_cubit.dart'
     as _i32;
+import 'package:jira/features/login_signup/domain/cubit/AuthCubit.dart'
+    as _i815;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -73,6 +75,7 @@ extension GetItInjectableX on _i174.GetIt {
       environmentFilter,
     );
     gh.singleton<_i600.ApiClient>(() => _i600.ApiClient());
+    gh.lazySingleton<_i815.AuthCubit>(() => _i815.AuthCubit());
     gh.factory<_i151.IssueRemoteDataSource>(
         () => _i151.IssueRemoteDataSourceImpl());
     gh.factory<_i355.ProjectRemoteDataSource>(
