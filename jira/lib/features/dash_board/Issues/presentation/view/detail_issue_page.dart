@@ -22,12 +22,14 @@ class _DetailIssuePageState extends State<DetailIssuePage> {
   late IssueEntity _currentIssue;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _summaryController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _currentIssue = widget.issue;
     _titleController.text = _currentIssue.title;
+    _summaryController.text = _currentIssue.summary;
     _descriptionController.text = _currentIssue.description ?? '';
     _assigneeFuture = _fetchUser(_currentIssue.assigneeId);
     _reporterFuture = _fetchUser(_currentIssue.reporterId);
@@ -39,6 +41,7 @@ class _DetailIssuePageState extends State<DetailIssuePage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _summaryController.dispose();
     super.dispose();
   }
 
@@ -291,6 +294,110 @@ Future<void> _updateDescription() async {
     );
   }
 }
+
+
+
+Future<void> _updateSummary() async {
+  final newSummary = await showModalBottomSheet<String>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.3,
+        maxChildSize: 0.8,
+        builder: (_, controller) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Edit Summary',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: controller,
+                    child: TextField(
+                      controller: _summaryController,
+                      autofocus: true,
+                      maxLines: null,
+                      minLines: 3,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                        hintText: 'Enter summary...',
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.grey.shade600,
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () =>
+                          Navigator.pop(context, _summaryController.text),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade600,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  if (newSummary != null && newSummary != _currentIssue.summary) {
+    final updatedIssue = _currentIssue.copyWith(summary: newSummary);
+    await context.read<IssueCubit>().updateIssue(updatedIssue);
+
+    setState(() {
+      _currentIssue = updatedIssue;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text("Summary updated successfully!"),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: Colors.green.shade600,
+      ),
+    );
+  }
+}
+
 
 
   Future<void> _deleteIssue() async {
@@ -555,6 +662,7 @@ Future<void> _updateDescription() async {
                           future: _assigneeFuture,
                           onAssign: () async {
                             final members = await _projectMembersFuture;
+    
                             if (members == null || members.isEmpty) return;
 
                             final List<UserModel>? result =
@@ -586,6 +694,30 @@ Future<void> _updateDescription() async {
                       ],
                     ),
                   ),
+
+
+                  const SizedBox(height: 16),
+
+                  // Description Section
+                  _buildSectionCard(
+                    title: "Summary",
+                    icon: Icons.description_outlined,
+                    trailing: IconButton(
+                      icon: const Icon(Icons.edit, size: 20),
+                      onPressed: _updateSummary,
+                      tooltip: 'Edit Summary',
+                    ),
+                    child: Text(
+                      issue.summary ,
+                      style: TextStyle(
+                        fontSize: 15,
+                        height: 1.6,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+
+
 
                   const SizedBox(height: 16),
 
@@ -750,7 +882,7 @@ Future<void> _updateDescription() async {
                         CircleAvatar(
                           radius: 16,
                           backgroundColor: Colors.blue.shade100,
-                         backgroundImage: AssetImage('jira/assets/images/image.png'),
+                        // backgroundImage: AssetImage('jira/assets/images/image.png'),
                           child:  Text(
                                   user.lastName[0].toUpperCase(),
                                   style: TextStyle(
