@@ -31,6 +31,9 @@ app.use('/api/issues',  issuesRoutes );
 //Comments
 app.use('/api/comments', commentRoutes);
 
+//notification 
+// app.use('/api/notify' , notifyRoutes);
+
 app.get("/", (req, res) => {
   res.json({ message: "Jira Backend API running 🚀" });
    console.log("Jira Backend API running");

@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     // Delay 2 giây rồi trả về trạng thái đăng nhập
     _initFuture = Future.delayed(const Duration(seconds: 2), () {
-      return context.read<AuthCubit>().state;
+      return context.read<AuthCubit>().state.isLoggedIn;
     });
   }
 

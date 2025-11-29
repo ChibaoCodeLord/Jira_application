@@ -2,10 +2,7 @@ import { Project } from "../models/project.js";
 import {db} from "../config/db.js"
 
 import  { sendSuccessResponse, sendErrorResponse } from "../utils/response.js";
-
-
-
-
+import { addNotification } from "./notify.controller.js";
 /**
  * @swagger
  * /projects/by-user:
@@ -111,6 +108,8 @@ export const getProjectByUserId = async (req, res) => {
  *         description: Lỗi server
  */
 
+
+
 export const createProject = async (req, res) => {
   try {
     const {
@@ -126,6 +125,7 @@ export const createProject = async (req, res) => {
     } = req.body;
 
     const ownerId = req.user?.uid;
+    console.log(req.user);
     if (!ownerId) {
       return res.status(401).json({
         status: "error",
@@ -156,6 +156,28 @@ export const createProject = async (req, res) => {
     });
 
     project = await project.save();
+
+    // thêm thông báo 
+    const userDoc = await db.collection('users').doc(ownerId).get();
+    const ownerName = userDoc.exists ? userDoc.data().userName : 'Owner';
+    
+    const addedMembers = uniqueMembers.filter(uid => uid !== ownerId);
+    
+    await Promise.all(
+      addedMembers.map(memberId =>
+        addNotification(memberId, {
+          type: 'project_assigned',
+          fromUid: ownerId,
+          fromName: ownerName,
+          content: `${ownerName} added you to project "${project.name}"`,
+          timestamp: new Date(),
+          isRead: false,
+          status: 'pending',
+        })
+      )
+    );
+    
+
 
     return res.status(201).json({
       status: "success",
@@ -217,7 +239,6 @@ export const removeProject = async (req, res) => {
   try {
     const idProject = req.body.id;
     const ownerId = req.user?.uid;
-
     if (!ownerId) {
       return sendErrorResponse(res, 401, "Unauthorized", "You must be logged in to delete a project");
     }
@@ -324,9 +345,9 @@ export const editProject = async (req, res) => {
 
     const projectData = doc.data();
 
-    if (projectData.ownerId !== ownerId) {
-      return sendErrorResponse(res, 403, "Forbidden", "You are not authorized to edit this project");
-    }
+    // if (projectData.ownerId !== ownerId) {
+    //   return sendErrorResponse(res, 403, "Forbidden", "You are not authorized to edit this project");
+    // }
 
     const updatedFields = {};
     if (name !== undefined && name.trim() !== "") updatedFields.name = name;

@@ -3,8 +3,6 @@ import { db } from "../config/db.js";
 import { sendSuccessResponse, sendErrorResponse } from "../utils/response.js";
 
 
-
-
 /**
  * @swagger
  * /comments/{idTask}:

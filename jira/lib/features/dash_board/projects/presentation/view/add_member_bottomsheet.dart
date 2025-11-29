@@ -192,7 +192,7 @@ class _AddMemberBottomSheetState extends State<AddMemberBottomSheet> {
                                   CircleAvatar(
                                     backgroundColor: Colors.blueAccent,
                                     child: Text(
-                                      _getInitial(u['firstName']),
+                                      _getInitial(u['lastName']),
                                       style: const TextStyle(color: Colors.white),
                                     ),
                                   ),

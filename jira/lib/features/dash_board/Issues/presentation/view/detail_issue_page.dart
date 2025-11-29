@@ -401,27 +401,72 @@ Future<void> _updateSummary() async {
 
 
   Future<void> _deleteIssue() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Issue'),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        content: const Text('Are you sure you want to delete this issue? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+final confirmed = await showDialog<bool>(
+  context: context,
+  builder: (context) => AlertDialog(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    backgroundColor: Colors.white,
+    titlePadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+    contentPadding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+    actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+
+    title: Row(
+      children: [
+        Icon(Icons.warning_amber_rounded,
+            color: Colors.red.shade600, size: 28),
+        const SizedBox(width: 10),
+        const Text(
+          'Delete Issue',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.black,
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
+        ),
+      ],
+    ),
+
+    content: const Text(
+      'Are you sure you want to delete this issue? This action cannot be undone.',
+      style: TextStyle(
+        fontSize: 15,
+        color: Colors.black87,
+        height: 1.4,
       ),
-    );
+    ),
+
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context, false),
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.black87,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          textStyle: const TextStyle(fontSize: 15),
+        ),
+        child: const Text('Cancel'),
+      ),
+      FilledButton(
+        onPressed: () => Navigator.pop(context, true),
+        style: FilledButton.styleFrom(
+          backgroundColor: Colors.red.shade600,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textStyle: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        child: const Text('Delete'),
+      ),
+    ],
+  ),
+);
+
 
     if (confirmed == true) {
       try {

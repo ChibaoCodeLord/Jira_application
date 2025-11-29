@@ -394,6 +394,13 @@ Future<List<UserModel>> _loadUsersInProject(String projectId) async {
                     label: "Description",
                     icon: Icons.description_outlined,
                     maxLines: 3),
+                const SizedBox(height: 16),
+                //asignee 
+                if (_selectedAssignee!= null)
+                  buildAssigneeField(
+                    label: _selectedAssignee?.email,
+                    icon: Icons.person_2_outlined,
+                    maxLines: 1),
         
                 const SizedBox(height: 28),
         
