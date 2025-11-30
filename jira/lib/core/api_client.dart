@@ -8,7 +8,7 @@ class ApiClient {
   static final _storage = FlutterSecureStorage();
 
   static void setup() {
-    dio.options.baseUrl = 'http://localhost:8080/api';
+    dio.options.baseUrl = 'http://192.168.1.102:8080/api';
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {

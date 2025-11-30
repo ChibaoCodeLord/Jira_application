@@ -135,112 +135,108 @@ Future<void> _edit({
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) {
-      return DraggableScrollableSheet(
-        initialChildSize: options != null && options.isNotEmpty ? 0.35 : 0.25,
-        maxChildSize: 0.8,
-        minChildSize: 0.2,
-        builder: (_, scrollCtrl) => Container(
-          padding: const EdgeInsets.all(20),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 10,
-                offset: Offset(0, -3),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Nếu có options, hiển thị danh sách
-              if (options != null && options.isNotEmpty)
-                Expanded(
-                  child: ListView.separated(
-                    controller: scrollCtrl,
-                    itemCount: options.length,
-                    separatorBuilder: (_, __) => const Divider(height: 0),
-                    itemBuilder: (_, index) {
-                      final option = options[index];
-                      final isSelected = controller.text == option;
-                      return ListTile(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        tileColor: isSelected
-                            ? Colors.blue.shade50
-                            : Colors.grey.shade100,
-                        title: Text(
-                          option,
-                          style: TextStyle(
-                            fontWeight:
-                                isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? Colors.blue.shade700 : Colors.black87,
-                          ),
-                        ),
-                        onTap: () => Navigator.pop(context, option),
-                      );
-                    },
-                  ),
-                )
-              else
-                // Nếu không có options, hiển thị TextField bình thường
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    maxLines: maxLines,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: "Enter $label",
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                ),
-
-              const SizedBox(height: 16),
-
-              // Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(
-                        context,
-                        options != null && options.isNotEmpty
-                            ? controller.text
-                            : controller.text),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade600,
-                    ),
-                    child: const Text("Save"),
+    builder: (context) {
+      final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+      return Padding(
+        padding: EdgeInsets.only(bottom: bottomInset),
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.8,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (_, scrollCtrl) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, -3),
                   ),
                 ],
               ),
-            ],
-          ),
+              child: ListView(
+                controller: scrollCtrl,
+                padding: const EdgeInsets.all(20),
+                children: [
+                  // Title
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (options != null && options.isNotEmpty) ...[
+                    ListView.separated(
+                      controller: null,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: options.length,
+                      separatorBuilder: (_, __) => const Divider(height: 0),
+                      itemBuilder: (_, index) {
+                        final option = options[index];
+                        final isSelected = controller.text == option;
+                        return ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          tileColor:
+                              isSelected ? Colors.blue.shade50 : Colors.grey.shade100,
+                          title: Text(
+                            option,
+                            style: TextStyle(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? Colors.blue.shade700 : Colors.black87,
+                            ),
+                          ),
+                          onTap: () => Navigator.pop(context, option),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ] else ...[
+                    TextField(
+                      controller: controller,
+                      maxLines: maxLines,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: "Enter $label",
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("Cancel"),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context, controller.text),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue.shade600,
+                        ),
+                        child: const Text("Save"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       );
     },
@@ -321,7 +317,8 @@ Future<void> _edit({
                   label: "Status",
                   controller: _statusCtrl,
                   onSave: (t) => _updateField(status: t),
-                  options: ["Active", "Review", "Done", "Blocked"],
+                  //options: ["Active", "Review", "Done", "Blocked"],
+                  options: ["Active", "Review", "Done"],
                 ),
                   customContent: _buildStatusBadge(_currentProject.status),
                 ),

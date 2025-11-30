@@ -161,7 +161,7 @@ class ProjectRow extends StatelessWidget {
                                 const Icon(Icons.warning_amber_rounded, size: 48, color: Color.fromARGB(255, 255, 0, 4)),
                                 const SizedBox(height: 16),
                                 const Text(
-                                  'Remove Project',
+                                  'Remove ',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -187,7 +187,7 @@ class ProjectRow extends StatelessWidget {
                                         side: const BorderSide(color: Colors.white70),
                                       ),
                                       child: const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                                         child: Text(
                                           'Cancel',
                                           style: TextStyle(color: Colors.white), // text trắng
@@ -203,7 +203,7 @@ class ProjectRow extends StatelessWidget {
                                         ),
                                       ),
                                       child: const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                                         child: Text(
                                           'Remove',
                                           style: TextStyle(color: Colors.white), // text trắng

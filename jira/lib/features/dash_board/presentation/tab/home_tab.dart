@@ -275,7 +275,7 @@ class ProjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final double cardHeight = 80; 
     final double cardWidth = MediaQuery.of(context).size.width; 
-    final double aspectRatio = 3.5; 
+    final double aspectRatio = 3; 
 
     return Container(
       width: cardWidth,

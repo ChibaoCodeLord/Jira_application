@@ -42,10 +42,6 @@ export const getProjectByUserId = async (req, res) => {
       .where("members", "array-contains", userId)
       .get();
 
-    if (snapshot.empty) {
-      return sendErrorResponse(res, 404, "NotFound", "Không tìm thấy project nào cho user này");
-    }
-
     const projects = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
@@ -259,9 +255,20 @@ export const removeProject = async (req, res) => {
       return sendErrorResponse(res, 403, "Forbidden", "You are not authorized to delete this project");
     }
 
-    await projectRef.delete();
+    const issuesSnapshot = await db.collection("issues")
+      .where("projectId", "==", idProject)
+      .get();
 
-    return sendSuccessResponse(res, 200, "Project deleted successfully", {
+    const batch = db.batch();
+    issuesSnapshot.docs.forEach(issueDoc => {
+      batch.delete(issueDoc.ref);
+    });
+
+    batch.delete(projectRef);
+
+    await batch.commit();
+
+    return sendSuccessResponse(res, 200, "Project and related issues deleted successfully", {
       id: idProject,
       name: projectData.name,
       description: projectData.description,
@@ -271,6 +278,7 @@ export const removeProject = async (req, res) => {
     return sendErrorResponse(res, 500, "InternalServerError", "An unexpected error occurred while deleting the project");
   }
 };
+
 
 
 

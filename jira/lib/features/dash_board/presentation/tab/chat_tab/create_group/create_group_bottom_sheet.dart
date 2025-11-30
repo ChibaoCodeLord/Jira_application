@@ -135,8 +135,8 @@ class _CreateGroupBottomSheetState extends State<CreateGroupBottomSheet> {
                             if (state.friends.isEmpty) {
                               return Center(
                                 child: Text(
-                                  state.errorMessage?.isNotEmpty == true
-                                      ? state.errorMessage!
+                                  state.errorMessage.isNotEmpty == true
+                                      ? state.errorMessage
                                       : 'No results',
                                   style: const TextStyle(color: Colors.grey),
                                 ),
